@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  const YES = { value: 'yes', label: '🤫 Yes', sub: 'I hear sh' };
-  const NO = { value: 'no', label: '🙅 No', sub: 'no sh' };
+  const YES = { value: 'yes', label: 'Yes', sub: 'I hear sh' };
+  const NO = { value: 'no', label: 'No', sub: 'no sh' };
   const START = { value: 'start', label: 'sh _ _', sub: 'at the start' };
   const END = { value: 'end', label: '_ _ sh', sub: 'at the end' };
 

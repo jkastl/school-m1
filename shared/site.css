@@ -111,7 +111,18 @@ main, .top-inner, footer {
 }
 a { color: var(--accent); }
 button { font: inherit; color: inherit; }
-.emoji { font-family: var(--emoji); font-style: normal; }
+/* Emoji appear only as pictures that stand for a word or a sound (README, "Pictures"). */
+.pic { font-family: var(--emoji); font-style: normal; }
+/* The class's heart over a tricky part, drawn so it takes the theme's color. */
+.heart-mark, .tile.heart::before {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.82em;
+  background: var(--heart);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M12 21.5 10.3 20C4.2 14.5 0 10.8 0 6.4 0 2.8 2.8 0 6.4 0c2 0 4 .9 5.6 2.4C13.6.9 15.6 0 17.6 0 21.2 0 24 2.8 24 6.4c0 4.4-4.2 8.1-10.3 13.6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M12 21.5 10.3 20C4.2 14.5 0 10.8 0 6.4 0 2.8 2.8 0 6.4 0c2 0 4 .9 5.6 2.4C13.6.9 15.6 0 17.6 0 21.2 0 24 2.8 24 6.4c0 4.4-4.2 8.1-10.3 13.6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.heart-mark { vertical-align: -0.05em; }
 
 :focus-visible {
   outline: 3px solid var(--accent);
@@ -133,17 +144,21 @@ button { font: inherit; color: inherit; }
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
 }
-.back {
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.4rem;
+  color: var(--muted);
+}
+.crumbs a {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
   min-height: 48px;
-  padding: 0 0.5rem;
-  margin-left: -0.5rem;
   font-weight: 700;
   text-decoration: none;
 }
-.back:hover { text-decoration: underline; }
+.crumbs a:hover { text-decoration: underline; }
 .read-toggle {
   min-height: 44px;
   padding: 0.3rem 0.85rem;
@@ -160,14 +175,10 @@ button { font: inherit; color: inherit; }
   padding: 1.75rem 0 0.5rem;
 }
 .hero h1 {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   margin: 0 0 0.4rem;
   font-size: 2rem;
   line-height: 1.2;
 }
-.hero h1 .emoji { font-size: 2.4rem; }
 .hero p {
   margin: 0;
   font-size: 1.2rem;
@@ -237,20 +248,21 @@ button { font: inherit; color: inherit; }
   background: var(--accent-soft);
   border: 2px solid transparent;
   border-radius: 50%;
-  font-family: var(--emoji);
-  font-size: 1.35rem;
+  color: var(--accent);
   cursor: pointer;
 }
+.say .icon, .say .icon svg { display: block; width: 1.5rem; height: 1.5rem; }
 .say:hover { border-color: var(--accent); }
 .say.wide {
   width: auto;
   padding: 0 1rem;
   border-radius: 999px;
-  font-family: inherit;
+  color: var(--ink);
   font-size: 1.05rem;
   font-weight: 700;
   gap: 0.4rem;
 }
+.say.wide .icon, .say.wide .icon svg { width: 1.25rem; height: 1.25rem; color: var(--accent); }
 .no-speech .say, .say:empty { display: none !important; }
 
 /* ---------- buttons ---------- */
@@ -274,6 +286,7 @@ button { font: inherit; color: inherit; }
   color: var(--accent);
 }
 .btn:disabled { opacity: 0.5; cursor: default; }
+.btn .icon, .btn .icon svg { display: block; width: 1.25rem; height: 1.25rem; }
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -297,7 +310,7 @@ button { font: inherit; color: inherit; }
   font-size: 1rem;
   color: var(--muted);
 }
-.quiz-stars { font-family: var(--emoji); letter-spacing: 0.1em; }
+.quiz-stars { color: var(--star); font-size: 1.15rem; letter-spacing: 0.08em; }
 .quiz-card {
   display: flex;
   flex-direction: column;
@@ -317,6 +330,7 @@ button { font: inherit; color: inherit; }
   line-height: 1.1;
 }
 .quiz-pic svg { width: 5rem; height: 5rem; }
+.quiz-pic svg.listen { color: var(--accent); }
 .quiz-word {
   margin: 0;
   font-size: 2.2rem;
@@ -396,7 +410,7 @@ button { font: inherit; color: inherit; }
 }
 .quiz-done .big {
   display: block;
-  font-family: var(--emoji);
+  color: var(--star);
   font-size: 4rem;
   line-height: 1.1;
 }
@@ -439,13 +453,12 @@ button.tile:hover { border-color: var(--accent); }
   border-color: var(--heart);
 }
 .tile.heart::before {
-  content: "\2764\FE0F";
+  content: "";
   position: absolute;
-  top: -1.15rem;
+  top: -1.05rem;
   left: 50%;
   transform: translateX(-50%);
-  font-family: var(--emoji);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /* ---------- sound and word cards (tap to hear) ---------- */
@@ -475,7 +488,7 @@ button.tile:hover { border-color: var(--accent); }
   cursor: pointer;
 }
 .sound-card:hover, .word-card:hover { border-color: var(--accent); }
-.sound-card > .emoji, .word-card > .emoji { font-size: 2.4rem; line-height: 1; }
+.sound-card > .pic, .word-card > .pic { font-size: 2.4rem; line-height: 1; }
 .sound-card.star {
   background: var(--accent-soft);
   border-color: var(--accent);
@@ -529,7 +542,6 @@ button.tile:hover { border-color: var(--accent); }
   font-weight: 700;
   line-height: 1;
 }
-.vowel-letter .emoji { font-size: 0.9rem; margin-top: 0.2rem; }
 .vowel-card {
   display: flex;
   align-items: center;
@@ -545,7 +557,7 @@ button.tile:hover { border-color: var(--accent); }
 }
 .vowel-card:hover { border-color: var(--accent); }
 .vowel-card .mark { font-size: 1.9rem; min-width: 1.4em; }
-.vowel-card .emoji { font-size: 1.8rem; }
+.vowel-card .pic { font-size: 1.8rem; }
 .vowel-card .pic svg { display: block; width: 2.2rem; height: 2.2rem; }
 .name-box {
   display: inline-flex;
@@ -613,15 +625,11 @@ button.tile:hover { border-color: var(--accent); }
   list-style: none;
 }
 .world li {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
   padding: 0.85rem 1rem;
   background: var(--soft);
   border-radius: 14px;
   font-size: 1.1rem;
 }
-.world .emoji { font-size: 2rem; line-height: 1; }
 .world strong { display: block; }
 
 /* ---------- grown-up notes ---------- */
@@ -658,10 +666,12 @@ details.grownups li { margin: 0.25rem 0; }
 .burst span {
   position: absolute;
   top: -2rem;
-  font-family: var(--emoji);
+  color: var(--star);
   font-size: 1.8rem;
   animation: fall 1.6s ease-in forwards;
 }
+.burst .c1 { color: var(--accent); }
+.burst .c2 { color: var(--heart); }
 @keyframes fall {
   to { transform: translateY(110vh) rotate(260deg); opacity: 0.2; }
 }

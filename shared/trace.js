@@ -103,6 +103,17 @@
 
   // ---------- the tracing stage ----------
 
+  // The class's markers for the three lines, drawn around (0, 0) in a 20 by 20 box.
+  const STAR = Array.from({ length: 10 }, (_, i) => {
+    const r = i % 2 ? 3.6 : 8.6, a = (-90 + i * 36) * RAD;
+    return `${r1(r * Math.cos(a))} ${r1(r * Math.sin(a))}`;
+  }).join(' ');
+  T.ICONS = {
+    star: `<path d="M${STAR}Z" fill="#f2b705"/>`,
+    moon: '<path d="M4 -6.93A8 8 0 1 0 4 6.93A8.5 8.5 0 0 1 4 -6.93Z" fill="#2a9d96"/>',
+    earth: '<circle r="8" fill="#2f74d0"/><ellipse cx="-2.6" cy="-2.2" rx="3.3" ry="2.5" fill="#3aa75b"/><ellipse cx="3.2" cy="3.4" rx="2.7" ry="2" fill="#3aa75b"/>',
+  };
+
   function svg(tag, attrs) {
     const n = document.createElementNS(NS, tag);
     for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
@@ -129,32 +140,35 @@
     // The stage: lines, the gray letter with arrows and numbers, the demo, and the child's ink.
     const stage = svg('svg', { viewBox: `0 0 ${W} ${H}`, class: 'trace-svg', role: 'img' });
     const lines = svg('g', { class: 'g-lines' });
-    [['star', '⭐'], ['moon', '🌙'], ['earth', '🌎']].forEach(([name, icon]) => {
+    ['star', 'moon', 'earth'].forEach((name) => {
       const y = LN[name];
       lines.append(svg('line', { x1: 34, y1: y, x2: W - 4, y2: y, class: `g-line g-${name}` }));
-      const t = svg('text', { x: 16, y: y + 1, class: 'g-icon', 'text-anchor': 'middle', 'dominant-baseline': 'central' });
-      t.textContent = icon;
-      lines.append(t);
+      const g = svg('g', { transform: `translate(16 ${y})` });
+      g.innerHTML = T.ICONS[name];
+      lines.append(g);
+    });
+    // The same markers wherever the page asks for one: <span data-line-icon="moon">.
+    document.querySelectorAll('[data-line-icon]').forEach((n) => {
+      n.innerHTML = `<svg viewBox="-10 -10 20 20" aria-hidden="true" focusable="false">${T.ICONS[n.dataset.lineIcon]}</svg>`;
     });
     const ghost = svg('g', { class: 'g-ghost' });
     const marks = svg('g', { class: 'g-marks' });
     const demo = svg('g', { class: 'g-demo' });
     const ink = svg('g', { class: 'g-ink' });
-    const rocket = svg('text', { class: 'g-rocket', 'text-anchor': 'middle', 'dominant-baseline': 'central', visibility: 'hidden' });
-    rocket.textContent = '🚀';
-    stage.append(lines, ghost, marks, demo, ink, rocket);
+    const tip = svg('circle', { r: 5.5, class: 'g-tip', visibility: 'hidden' });
+    stage.append(lines, ghost, marks, demo, ink, tip);
 
     const cue = Lz.el('p', { class: 'trace-cue', 'aria-live': 'polite' });
     const steps = Lz.el('ol', { class: 'trace-steps' });
     const result = Lz.el('p', { class: 'feedback', 'aria-live': 'polite' });
     const words = Lz.el('p', { class: 'trace-words' });
-    const showBtn = Lz.el('button', { type: 'button', class: 'btn', onclick: play }, '▶ Show me');
-    const clearBtn = Lz.el('button', { type: 'button', class: 'btn ghost', onclick: clear }, '✏️ Clear');
-    const checkBtn = Lz.el('button', { type: 'button', class: 'btn ghost', onclick: check }, '✔ How did I do?');
+    const showBtn = Lz.el('button', { type: 'button', class: 'btn', onclick: play }, 'Show me');
+    const clearBtn = Lz.el('button', { type: 'button', class: 'btn ghost', onclick: clear }, 'Clear');
+    const checkBtn = Lz.el('button', { type: 'button', class: 'btn ghost', onclick: check }, 'How did I do?');
     const soloBtn = Lz.el('button', {
       type: 'button', class: 'btn ghost', 'aria-pressed': 'false',
       onclick: () => { solo = !solo; soloBtn.setAttribute('aria-pressed', String(solo)); root.classList.toggle('solo', solo); },
-    }, '🙈 Hide the gray letter');
+    }, 'Hide the gray letter');
 
     root.append(
       picks,
@@ -240,7 +254,7 @@
       demo.textContent = '';
       result.textContent = '';
       result.className = 'feedback';
-      rocket.setAttribute('visibility', 'hidden');
+      tip.setAttribute('visibility', 'hidden');
       playToken++;
       steps.querySelectorAll('li').forEach((li) => li.classList.remove('now'));
     }
@@ -265,7 +279,7 @@
         if (reduced) { await wait(700); continue; }
         path.style.strokeDasharray = `${len} ${len}`;
         path.style.strokeDashoffset = len;
-        rocket.setAttribute('visibility', 'visible');
+        tip.setAttribute('visibility', 'visible');
         const ms = Math.max(600, (len / 95) * 1000);
         const t0 = performance.now();
         await new Promise((res) => {
@@ -274,8 +288,8 @@
             const k = Math.min(1, (now - t0) / ms);
             path.style.strokeDashoffset = len * (1 - k);
             const p = path.getPointAtLength(len * k);
-            rocket.setAttribute('x', r1(p.x + 9));
-            rocket.setAttribute('y', r1(p.y - 9));
+            tip.setAttribute('cx', r1(p.x));
+            tip.setAttribute('cy', r1(p.y));
             if (k < 1) requestAnimationFrame(frame); else res();
           }
           requestAnimationFrame(frame);
@@ -283,7 +297,7 @@
         await wait(250);
       }
       if (token !== playToken) return;
-      rocket.setAttribute('visibility', 'hidden');
+      tip.setAttribute('visibility', 'hidden');
       items.forEach((li) => li.classList.remove('now'));
       cue.textContent = `Your turn! Trace ${shape.say}, starting at the green dot.`;
       Lz.autoSpeak('Your turn! Start at the green dot.');
@@ -296,7 +310,7 @@
       const started = !!begin && Math.hypot(begin.x - first.x, begin.y - first.y) <= 20;
       const msg = T.message(sc, started);
       result.className = 'feedback ' + (sc.stars >= 2 ? 'good' : 'try');
-      result.textContent = (sc.stars ? '⭐'.repeat(sc.stars) + ' ' : '') + msg;
+      result.textContent = (sc.stars ? '★'.repeat(sc.stars) + ' ' : '') + msg;
       Lz.autoSpeak(msg);
       if (sc.stars === 3) Lz.burst();
     }
@@ -313,7 +327,7 @@
       // Drawing stops the demo and wipes it, so the child traces over the gray letter.
       playToken++;
       demo.textContent = '';
-      rocket.setAttribute('visibility', 'hidden');
+      tip.setAttribute('visibility', 'hidden');
       steps.querySelectorAll('li').forEach((li) => li.classList.remove('now'));
       stage.setPointerCapture(e.pointerId);
       const line = svg('polyline', { class: 'ink' });

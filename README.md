@@ -44,8 +44,8 @@ This repo is public, and git history keeps everything, so these rules beat every
 
 1. List the topics on the source sheet. **Ignore unit, section, lesson and page numbers**; they
    say nothing about the topic and differ between programs.
-2. For each topic, search the index and the lessons, e.g.
-   `grep -ril "digraph\|heart word" index.html lessons/`.
+2. For each topic, search the lesson list and the lessons, e.g.
+   `grep -ril "digraph\|heart word" lessons.js */`.
 3. **Default to a new lesson**, even when a similar one exists (`heart-words-set-2` next to
    `heart-words-set-1`). Change an existing lesson only when the new material is truly the same
    (same letters, words or skill), or when asked to improve that lesson.
@@ -56,10 +56,16 @@ Six- and seven-year-olds who are just starting to read.
 
 - **One lesson per topic.** A sheet with four topics becomes four lessons.
 - **Kid-facing text** is short and plain, uses decodable words where it can, and is big (1.25rem
-  or more). Every kid-facing paragraph sits in a `.say-line` with a 🔊 button.
+  or more). Every kid-facing paragraph sits in a `.say-line` with a speaker button.
 - **Match the classroom's words** from the sheet (heart words; the star, moon and earth lines;
   "land the rocket"), so home and school sound the same. Say it in your own words, though,
   and don't copy the sheet's pictures.
+- **Pictures, not decoration.** Emoji appear only as pictures that stand for a word or a sound:
+  quiz pictures, and the few explainer cards that need one (a snake for /s/, an apple for short
+  *a*). In a page, each one is a `<span class="pic" aria-hidden="true">`. Never put emoji in
+  headings, buttons, lists, feedback or the lesson list. Interface icons (the speaker, the star,
+  moon and earth markers, hearts) are drawn in SVG or CSS, and stars are the ★ character. A test
+  enforces this.
 - **Pictures with one obvious name:** 🚢 for *ship*, not a boat that could be *boat*. If no emoji
   fits, draw one in `Lesson.pictures`. Check that the emoji is a few years old so it shows on
   older tablets.
@@ -75,9 +81,11 @@ Six- and seven-year-olds who are just starting to read.
 
 ### 4. What a lesson looks like
 
-A lesson is a folder, `lessons/<slug>/`, with `index.html` and `lesson.js`. Name the slug by topic
-and content, lowercase with hyphens: `digraph-sh`, `heart-words-set-1`, `handwriting-o-h-l-g`,
-`vowels-long-short-i-u`. Start by copying the closest lesson.
+A lesson is a folder inside its subject's folder, `<subject>/<slug>/`, with `index.html` and
+`lesson.js`, so its address reads `/school-m1/reading/digraph-sh/`. The subject folder is the
+subject's name in lowercase (`reading`, `writing`, `math`; `social-studies` for two words). Name
+the slug by topic and content, lowercase with hyphens: `digraph-sh`, `heart-words-set-1`,
+`handwriting-o-h-l-g`, `vowels-long-short-i-u`. Start by copying the closest lesson.
 
 The page has four parts, in this order, with these ids:
 
@@ -87,9 +95,9 @@ The page has four parts, in this order, with these ids:
 4. `#grownups`: a closed `<details class="grownups">`.
 
 Copy the `<head>` from an existing lesson (robots, referrer, CSP, viewport, title, description,
-icon) and keep the "← All lessons" link and the Auto-read toggle in the top bar. Give the
-`<body>` a theme class (`theme-heart`, `theme-write`, `theme-sh`, `theme-vowel`, or add one in
-`shared/site.css`).
+icon) and keep the top bar: the breadcrumb (All lessons / *Subject*) and the Auto-read toggle.
+Give the `<body>` a theme class (`theme-heart`, `theme-write`, `theme-sh`, `theme-vowel`, or add
+one in `shared/site.css`).
 
 `lesson.js` puts its data first and registers it, so the tests can load it in Node, then stops
 when there's no page:
@@ -113,7 +121,8 @@ when there's no page:
 | `shared/lesson.js` | `Lesson`: read-aloud, the quiz, `[data-say]` buttons, pictures, the star shower |
 | `shared/letters.js` | `Letters`: handwriting shapes on the star, moon and earth lines |
 | `shared/trace.js`, `trace.css` | `Trace`: the "Show me" demo, finger tracing and the star check |
-| `shared/catalog.js`, `catalog.css` | `Catalog`: search and sort on the index |
+| `lessons.js` | `LESSON_LIST`: every lesson, read by the index, the subject pages and the tests |
+| `shared/catalog.js`, `catalog.css` | `Catalog`: the compact lesson table, with search, subject filters and sorting |
 | `shared/fonts/` | Andika, a font made for early readers (single-story *a* and *g*), with its license |
 
 **Quiz items.** A quiz is `{ items, choices, ask, shuffleChoices }`, and each item is:
@@ -122,7 +131,7 @@ when there's no page:
 {
   word: 'ship',            // shown big; an array with null for a blank: [null, 'ip']
   pic: '🚢',               // emoji, or the name of a drawing in Lesson.pictures
-  say: 'ship',             // what 🔊 says (defaults to the word, with "blank" for blanks)
+  say: 'ship',             // what the speaker says (defaults to the word, "blank" for blanks)
   choices: ['sh', 's'],    // or set them once for the whole quiz
   answer: 'sh',
   yes: 'Yes! ship.',       // shown and said when right
@@ -143,37 +152,35 @@ when it should say something else. Any button with `data-say` talks when tapped.
 the cues), then list them in the lesson's `lesson.js`. The tests check that each letter sits on
 the right lines and that its steps join up.
 
-### 6. Add it to the index
+### 6. Add it to the list
 
-Copy a `<li>` in `<ul id="lessons">` in [`index.html`](index.html) and change its values:
+Add one line to [`lessons.js`](lessons.js), at the top (newest first):
 
-```html
-<li data-added="2026-10-20" data-subject="Reading" data-title="Digraph sh" data-keywords="phonics digraphs sh sound">
-  <span class="lesson-icon emoji" aria-hidden="true">🤫</span>
-  <div class="lesson-body">
-    <h2 class="lesson-name"><a href="lessons/digraph-sh/">Digraph sh</a></h2>
-    <p class="lesson-desc">One or two sentences on what it covers.</p>
-    <p class="lesson-meta"><span class="pill">Reading</span><span>Phonics · Digraphs</span><time datetime="2026-10-20">Added Oct 20, 2026</time></p>
-  </div>
-</li>
+```js
+{ path: 'reading/digraph-sh/', title: 'Digraph sh', subject: 'Reading', added: '2026-10-20', keywords: 'phonics digraphs sh sound' },
 ```
 
-- `data-title` must match the link text, the page's `<h1>` and the start of its `<title>`.
-- `data-added` and `<time>` are the day the lesson was added. Keep rows newest first (same day:
-  A to Z), which is the order the page shows with JavaScript off.
-- `data-subject` is the pill: Reading, Writing, Math, Science, and so on.
-- `data-keywords` are extra search words that aren't on the row (the words taught, other names
-  for the skill).
+- `path` is the lesson's folder, inside its subject's folder.
+- `title` must match the page's `<h1>` and the start of its `<title>`.
+- `subject` must match the folder (`Reading` lives in `reading/`), and the lesson's breadcrumb.
+- `added` is the day the lesson was added.
+- `keywords` are extra search words that aren't in the title: the words or letters taught, and
+  other names for the skill.
 
-The tests check all of this. Search matches every word typed, across the row and its keywords.
-Sorting offers newest, oldest, A to Z, Z to A, and subject.
+That's all it takes: the index and the subject's page both read the list. The index is a compact
+table (lesson, subject, date added) with search, a filter per subject, and columns you can sort.
+It opens newest first. Search matches every word typed, across the title, subject and keywords.
+
+**A new subject** gets a folder with an `index.html` that lists just that subject: copy
+`reading/index.html` and change the subject in its `<title>`, `<h1>`, description and
+`data-subject`. The tests check that every subject has one and that every lesson is listed once.
 
 ### 7. Accessibility
 
 - Real `<button>`s and links, with tap targets of 48px or more and a visible focus ring.
-- Feedback goes in an `aria-live` region and never relies on color alone (✔, words, crossed out).
-- Decorative emoji are `aria-hidden`; pictures that carry meaning have the word next to them.
-- Respect `prefers-reduced-motion` (no star shower, no rocket). Work at phone width (390px).
+- Feedback goes in an `aria-live` region and never relies on color alone (words, crossed out).
+- Pictures are `aria-hidden`, with the word they stand for next to them or spoken by the button.
+- Respect `prefers-reduced-motion` (no star shower, no moving pen tip). Work at phone width (390px).
 - Everything works by keyboard except finger tracing, which has the "Show me" demo instead.
 
 ### 8. Test it
@@ -184,8 +191,9 @@ node --test 'test/*.test.js'
 ```
 
 The tests (Node 20 or later, no dependencies) check the privacy rules (no photos, no outside
-requests, no storage, robots and CSP on every page), that links resolve, the index rows, every
-quiz's answers, the heart-word parts, the letter shapes and the tracing scores. GitHub Actions runs
+requests, no storage, robots and CSP on every page), that links resolve, that the lesson list
+matches the folders, the subject pages, emoji only as pictures, every quiz's answers, the
+heart-word parts, the letter shapes, the tracing scores, and search and sort. GitHub Actions runs
 them on every push. Before calling a lesson done, also open it at phone width and play every
 activity to the end.
 
@@ -193,17 +201,19 @@ activity to the end.
 
 The version and date in the index footer are updated by hand, in the same commit as the change:
 
-- **Patch** (`1.0.0` → `1.0.1`): a typo, wording, or a fixed answer.
-- **Minor** (`1.0.0` → `1.1.0`): adding, removing or renaming a lesson, or a new shared feature.
-- **Major** (`1.0.0` → `2.0.0`): a redesign or restructure.
+- **Patch** (`2.0.0` → `2.0.1`): a typo, wording, or a fixed answer.
+- **Minor** (`2.0.0` → `2.1.0`): adding, removing or renaming a lesson, or a new shared feature.
+- **Major** (`2.0.0` → `3.0.0`): a redesign, or a change that moves pages to new addresses.
 
 GitHub Pages publishes `main` as-is (`.nojekyll` turns off Jekyll), usually within a minute.
 
 ## Layout
 
 ```
-index.html          the lesson index (search and sort)
-lessons/<slug>/     one folder per lesson: index.html and lesson.js
+index.html          the lesson index (search, subject filters, sorting)
+lessons.js          the list of every lesson
+<subject>/          one folder per subject (reading/, writing/), with a page listing it
+<subject>/<slug>/   one folder per lesson: index.html and lesson.js
 shared/             styles, scripts and the font every page uses
 test/               node:test suite
 CLAUDE.md           points Claude at these instructions
