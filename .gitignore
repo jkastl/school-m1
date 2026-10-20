@@ -1,0 +1,16 @@
+# Keep photos and scans of worksheets out of this public repo, even by accident.
+# Draw pictures as inline SVG or use emoji instead (test/site.test.js checks this too).
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.heic
+*.heif
+*.webp
+*.bmp
+*.tif
+*.tiff
+*.pdf
+*.doc
+*.docx
+.DS_Store
