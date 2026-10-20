@@ -1,0 +1,705 @@
+/* Shared styles for the index and every lesson. Light by default, dark when the device asks.
+   Kid-facing text is big (1.25rem and up); grown-up notes are smaller. */
+
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/andika-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/andika-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Letters with vowel marks (ă ā ĭ ī ŭ ū ...) live in the latin-ext files, fetched only when used. */
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/andika-latin-ext-400-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/andika-latin-ext-700-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  color-scheme: light dark;
+  --bg: #fdf8ef;
+  --card: #ffffff;
+  --ink: #1f2430;
+  --muted: #555b69;
+  --line: #e7dcc8;
+  --soft: #f6efe2;
+  --accent: #2563c9;
+  --accent-soft: #e5eefc;
+  --on-accent: #ffffff;
+  --good: #17703d;
+  --good-soft: #e1f5e8;
+  --try: #a34a12;
+  --try-soft: #fdeddf;
+  --heart: #d0213a;
+  --star: #e8a400;
+  --guide: #d9d2c4;
+  --ink-pen: #2563c9;
+  --radius: 18px;
+  --emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171c;
+    --card: #1f222a;
+    --ink: #eef0f4;
+    --muted: #a9afbc;
+    --line: #353a47;
+    --soft: #262a33;
+    --accent: #7ea8ff;
+    --accent-soft: #23314d;
+    --on-accent: #0d1630;
+    --good: #6fd69a;
+    --good-soft: #1b3326;
+    --try: #ffb27a;
+    --try-soft: #3a281b;
+    --heart: #ff6b80;
+    --star: #ffc93d;
+    --guide: #4a4f5c;
+    --ink-pen: #7ea8ff;
+  }
+}
+
+/* Each lesson picks a color family to echo its topic. */
+.theme-heart { --accent: #c2263f; --accent-soft: #fde6ea; }
+.theme-write { --accent: #0f7a73; --accent-soft: #dcf3f1; --ink-pen: #0f7a73; }
+.theme-sh { --accent: #b4500f; --accent-soft: #fdeadb; }
+.theme-vowel { --accent: #2a5bd7; --accent-soft: #e4ecfd; }
+@media (prefers-color-scheme: dark) {
+  .theme-heart { --accent: #ff8496; --accent-soft: #3d1f26; }
+  .theme-write { --accent: #5fd3c8; --accent-soft: #163633; --ink-pen: #5fd3c8; }
+  .theme-sh { --accent: #ffad6b; --accent-soft: #3b2718; }
+  .theme-vowel { --accent: #8fb0ff; --accent-soft: #1f2b4a; }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { font-size: 18px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Andika", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+main, .top-inner, footer {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+.emoji { font-family: var(--emoji); font-style: normal; }
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- top bar ---------- */
+.top {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+.top-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 48px;
+  padding: 0 0.5rem;
+  margin-left: -0.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.back:hover { text-decoration: underline; }
+.read-toggle {
+  min-height: 44px;
+  padding: 0.3rem 0.85rem;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.read-toggle[aria-pressed="false"] { color: var(--muted); }
+
+/* ---------- page heading ---------- */
+.hero {
+  padding: 1.75rem 0 0.5rem;
+}
+.hero h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.4rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+.hero h1 .emoji { font-size: 2.4rem; }
+.hero p {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.2rem 0.9rem;
+  background: var(--accent-soft);
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ---------- sections ---------- */
+.card {
+  margin: 1.25rem 0;
+  padding: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.card > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.55rem;
+  line-height: 1.25;
+}
+.card h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.3rem;
+}
+.card h3:first-of-type { margin-top: 0.5rem; }
+.kid {
+  font-size: 1.3rem;
+  line-height: 1.55;
+}
+.kid p { margin: 0 0 0.8rem; }
+.say-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.say-line > p, .say-line > div { flex: 1; margin-top: 0.15rem; }
+
+/* The read-aloud button that sits next to kid-facing text. */
+.say {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: var(--accent-soft);
+  border: 2px solid transparent;
+  border-radius: 50%;
+  font-family: var(--emoji);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+.say:hover { border-color: var(--accent); }
+.say.wide {
+  width: auto;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  gap: 0.4rem;
+}
+.no-speech .say, .say:empty { display: none !important; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 52px;
+  padding: 0.4rem 1.25rem;
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  color: var(--on-accent);
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--accent);
+}
+.btn:disabled { opacity: 0.5; cursor: default; }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.9rem;
+}
+
+/* ---------- quiz ---------- */
+.quiz {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: var(--soft);
+  border-radius: 16px;
+}
+.quiz-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.quiz-stars { font-family: var(--emoji); letter-spacing: 0.1em; }
+.quiz-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.75rem auto;
+  padding: 1rem;
+  max-width: 24rem;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  text-align: center;
+}
+.quiz-pic {
+  font-family: var(--emoji);
+  font-size: 4.5rem;
+  line-height: 1.1;
+}
+.quiz-pic svg { width: 5rem; height: 5rem; }
+.quiz-word {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.quiz-word .blank {
+  display: inline-block;
+  min-width: 1.8em;
+  border-bottom: 4px solid var(--accent);
+  color: var(--accent);
+}
+.quiz-sentence { font-size: 1.6rem; }
+.quiz-help {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.quiz-ask {
+  margin: 0.5rem 0;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.quiz-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.choice {
+  min-width: 7rem;
+  min-height: 64px;
+  padding: 0.5rem 1rem;
+  background: var(--card);
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.choice small {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.choice:hover:not(:disabled) { border-color: var(--accent); }
+.choice:active:not(:disabled) { transform: scale(0.97); }
+.choice.right {
+  background: var(--good-soft);
+  border-color: var(--good);
+}
+.choice.wrong {
+  background: var(--try-soft);
+  border-color: var(--try);
+  opacity: 0.65;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.choice:disabled { cursor: default; }
+.feedback {
+  min-height: 2.2rem;
+  margin: 0.75rem 0 0;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.feedback.good { color: var(--good); }
+.feedback.try { color: var(--try); }
+.quiz-next { display: flex; justify-content: center; margin-top: 0.5rem; }
+.quiz-done {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+.quiz-done .big {
+  display: block;
+  font-family: var(--emoji);
+  font-size: 4rem;
+  line-height: 1.1;
+}
+.quiz-done p {
+  margin: 0.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.quiz-done .row { justify-content: center; }
+
+/* ---------- letter tiles (heart words, digraphs) ---------- */
+.tiles {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: flex-end;
+}
+.tile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 3.4rem;
+  padding: 0 0.35rem;
+  background: var(--card);
+  border: 3px solid var(--line);
+  border-radius: 12px;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+button.tile { cursor: pointer; }
+button.tile:hover { border-color: var(--accent); }
+.tile.picked {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.tile.heart {
+  color: var(--heart);
+  border-color: var(--heart);
+}
+.tile.heart::before {
+  content: "\2764\FE0F";
+  position: absolute;
+  top: -1.15rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--emoji);
+  font-size: 0.9rem;
+}
+
+/* ---------- sound and word cards (tap to hear) ---------- */
+.sound-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0.4rem;
+}
+.sound-row .op {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.sound-card, .word-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 8rem;
+  padding: 0.9rem 1rem 0.7rem;
+  background: var(--card);
+  border: 3px solid var(--line);
+  border-radius: 18px;
+  cursor: pointer;
+}
+.sound-card:hover, .word-card:hover { border-color: var(--accent); }
+.sound-card > .emoji, .word-card > .emoji { font-size: 2.4rem; line-height: 1; }
+.sound-card.star {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.sound-label {
+  font-size: 1rem;
+  color: var(--muted);
+}
+.tile.hot {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.note {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Room for the hearts that sit above heart-part tiles. */
+.heart-row .word-card, .quiz-card > .tiles { padding-top: 1.5rem; }
+.quiz-card button.tile { min-width: 3rem; height: 3.8rem; font-size: 2.4rem; }
+.finder-actions, .flash-actions { justify-content: center; }
+.flash-word { padding: 1rem 0; font-size: 3.6rem; }
+
+/* ---------- vowel chart ---------- */
+.mark { font-weight: 700; color: var(--accent); }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin: 0.5rem 0 0.75rem; }
+.grid.two h3 { margin: 0 0 0.2rem; }
+.vowel-table {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem;
+}
+.vowel-row {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr 1fr;
+  gap: 0.5rem;
+  align-items: stretch;
+  padding: 0.4rem;
+  border-radius: 16px;
+}
+.vowel-row.focus { background: var(--accent-soft); }
+.vowel-letter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.vowel-letter .emoji { font-size: 0.9rem; margin-top: 0.2rem; }
+.vowel-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 64px;
+  padding: 0.4rem 0.8rem;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+.vowel-card:hover { border-color: var(--accent); }
+.vowel-card .mark { font-size: 1.9rem; min-width: 1.4em; }
+.vowel-card .emoji { font-size: 1.8rem; }
+.vowel-card .pic svg { display: block; width: 2.2rem; height: 2.2rem; }
+.name-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+@media (max-width: 30rem) {
+  .vowel-row { grid-template-columns: 2.4rem 1fr 1fr; gap: 0.35rem; padding: 0.3rem; }
+  .vowel-card { flex-wrap: wrap; gap: 0.3rem; padding: 0.4rem 0.5rem; font-size: 0.95rem; }
+  .vowel-card .mark { font-size: 1.5rem; }
+}
+.action-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--soft);
+  border-radius: 16px;
+}
+.action-prompt {
+  flex: 1 1 14rem;
+  min-height: 2rem;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.action-prompt .mark { font-size: 1.8rem; }
+
+/* ---------- small pieces ---------- */
+.pill {
+  display: inline-block;
+  padding: 0.05rem 0.6rem;
+  background: var(--accent-soft);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.75rem;
+}
+.box {
+  padding: 0.9rem 1rem;
+  background: var(--soft);
+  border-radius: 14px;
+}
+.box h3, .box h4 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+.box p { margin: 0; }
+.world {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.world li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  background: var(--soft);
+  border-radius: 14px;
+  font-size: 1.1rem;
+}
+.world .emoji { font-size: 2rem; line-height: 1; }
+.world strong { display: block; }
+
+/* ---------- grown-up notes ---------- */
+details.grownups {
+  margin: 1.25rem 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+details.grownups > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 56px;
+  padding: 0.6rem 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+details.grownups > div { padding: 0 1.25rem 1.25rem; }
+details.grownups h3 { margin: 1.1rem 0 0.35rem; font-size: 1.1rem; }
+details.grownups ul { padding-left: 1.25rem; margin: 0.35rem 0; }
+details.grownups li { margin: 0.25rem 0; }
+
+/* ---------- celebration ---------- */
+.burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+}
+.burst span {
+  position: absolute;
+  top: -2rem;
+  font-family: var(--emoji);
+  font-size: 1.8rem;
+  animation: fall 1.6s ease-in forwards;
+}
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(260deg); opacity: 0.2; }
+}
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.wiggle { animation: wiggle 0.3s ease-in-out 2; }
+@media (prefers-reduced-motion: reduce) {
+  .burst { display: none; }
+  .wiggle { animation: none; }
+  .choice { transition: none; }
+}
+
+/* ---------- footer ---------- */
+footer {
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+footer p { margin: 0.25rem 0; }
+
+@media (max-width: 30rem) {
+  html { font-size: 17px; }
+  /* Keep a sound equation (s + h = sh) on one line. */
+  .sound-row.math { flex-wrap: nowrap; gap: 0.3rem; }
+  .sound-row.math .sound-card { flex: 1 1 0; min-width: 0; padding: 0.6rem 0.3rem 0.5rem; }
+  .sound-row.math .op { font-size: 1.4rem; }
+  .sound-row.math .sound-label { font-size: 0.8rem; text-align: center; }
+  .card { padding: 1rem 0.85rem; }
+  .hero h1 { font-size: 1.7rem; }
+  .choice { min-width: 6rem; font-size: 1.3rem; }
+  .tile { min-width: 2.3rem; height: 3rem; font-size: 1.7rem; }
+}
+@media print {
+  .top, .say, .read-toggle, .jump, .quiz-next { display: none !important; }
+  details.grownups > div { display: block; }
+  body { background: #fff; color: #000; }
+}

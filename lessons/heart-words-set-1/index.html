@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Heart Words, set 1 · Grade 1 practice</title>
+  <meta name="description" content="Heart words is, for, that, he, was, his and are, plus in, it and on: find the tricky part, hear the word, finish the sentence.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563c9'/%3E%3Cpath d='M16 5l3.2 6.6 7.3 1-5.3 5.1 1.3 7.2L16 21.5l-6.5 3.4 1.3-7.2-5.3-5.1 7.3-1z' fill='%23ffc93d'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../../shared/site.css">
+</head>
+<body class="theme-heart">
+  <header class="top">
+    <div class="top-inner">
+      <a class="back" href="../../">← All lessons</a>
+      <button type="button" class="read-toggle" aria-pressed="true">🔊 Auto-read on</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1><span class="emoji" aria-hidden="true">❤️</span> Heart Words, set 1</h1>
+      <p>is · for · that · he · was · his · are, plus in · it · on</p>
+      <ul class="jump" aria-label="On this page">
+        <li><a href="#learn">Learn</a></li>
+        <li><a href="#practice">Practice</a></li>
+        <li><a href="#world">Real world</a></li>
+        <li><a href="#grownups">Grown-ups</a></li>
+      </ul>
+    </div>
+    <noscript><p class="card">The activities on this page need JavaScript turned on.</p></noscript>
+
+    <section class="card" id="learn" aria-labelledby="learn-h">
+      <h2 id="learn-h"><span class="emoji" aria-hidden="true">💡</span> Learn</h2>
+      <div class="kid">
+        <div class="say-line">
+          <button class="say"></button>
+          <p>Lots of words, you can sound out. <strong>Heart words</strong> have a tricky part that doesn't sound the way you expect. You learn the tricky part <strong>by heart</strong>.</p>
+        </div>
+
+        <h3><span class="emoji" aria-hidden="true">✅</span> Sound these out</h3>
+        <div class="say-line">
+          <button class="say"></button>
+          <p>Every letter makes the sound you know. Tap a word to hear it.</p>
+        </div>
+        <div class="sound-row" id="plain-words"></div>
+
+        <h3><span class="emoji" aria-hidden="true">❤️</span> Heart words</h3>
+        <div class="say-line">
+          <button class="say" data-say="The red letters with a heart are the tricky part. Tap a word to hear it and find out why."></button>
+          <p>The red letters with a <span class="emoji" aria-hidden="true">❤️</span> are the tricky part. Tap a word to hear why.</p>
+        </div>
+        <div class="sound-row heart-row" id="heart-words"></div>
+        <p class="feedback" id="heart-why" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="card" id="practice" aria-labelledby="practice-h">
+      <h2 id="practice-h"><span class="emoji" aria-hidden="true">🎯</span> Practice</h2>
+
+      <h3>1. Find the heart part</h3>
+      <div class="say-line kid">
+        <button class="say" data-say="Tap the tricky letters, then tap check. If every letter sounds the way you expect, tap no tricky part."></button>
+        <p>Tap the tricky letters, then tap <strong>Check</strong>. No tricky letters? Tap <strong>No tricky part</strong>.</p>
+      </div>
+      <div class="quiz" id="finder"></div>
+
+      <h3>2. Listen and tap</h3>
+      <div class="say-line kid">
+        <button class="say" data-say="Tap hear the word. Then tap the word you hear."></button>
+        <p>Tap <strong>Hear the word</strong>. Then tap the word you hear.</p>
+      </div>
+      <div class="quiz" data-quiz="listen"></div>
+
+      <h3>3. Finish the sentence</h3>
+      <div class="say-line kid">
+        <button class="say" data-say="Read the sentence. Which word fits in the blank?"></button>
+        <p>Read the sentence. Which word fits?</p>
+      </div>
+      <div class="quiz" data-quiz="sentences"></div>
+
+      <h3>4. Flash cards</h3>
+      <div class="say-line kid">
+        <button class="say" data-say="Read the word out loud. Then tap check to hear if you got it."></button>
+        <p>Read the word out loud. Then tap <strong>Check</strong> to hear it.</p>
+      </div>
+      <div class="quiz" id="flash"></div>
+    </section>
+
+    <section class="card" id="world" aria-labelledby="world-h">
+      <h2 id="world-h"><span class="emoji" aria-hidden="true">🌎</span> In the real world</h2>
+      <div class="say-line kid">
+        <button class="say" data-say="Heart words are some of the words we use most. Look for them everywhere!"></button>
+        <p>Heart words are some of the words we use most. Look for them everywhere!</p>
+      </div>
+      <ul class="world">
+        <li><span class="emoji" aria-hidden="true">📖</span><span><strong>Book hunt</strong>Pick a page in a favorite book. How many times can you find <em>is</em> or <em>was</em>?</span></li>
+        <li><span class="emoji" aria-hidden="true">💌</span><span><strong>Write a note</strong>“<em>That is for</em> you!” has three heart words in it. Draw the hearts!</span></li>
+        <li><span class="emoji" aria-hidden="true">🛑</span><span><strong>Signs</strong>On a walk or at the store, look for <em>in</em>, <em>on</em>, <em>is</em> and <em>for</em> on signs.</span></li>
+        <li><span class="emoji" aria-hidden="true">🗣️</span><span><strong>Talking</strong>“Where <em>are</em> my shoes?” “<em>That</em> <em>is</em> <em>his</em> cup.” We say heart words all day long.</span></li>
+        <li><span class="emoji" aria-hidden="true">🖐️</span><span><strong>Write it big</strong>Write a heart word in sand, salt or shaving cream. Draw a heart over the tricky part.</span></li>
+        <li><span class="emoji" aria-hidden="true">🍽️</span><span><strong>At the table</strong>Take turns: one person says a heart word, the other spells it out loud.</span></li>
+      </ul>
+    </section>
+
+    <details class="grownups" id="grownups">
+      <summary><span class="emoji" aria-hidden="true">🧑‍🏫</span> For grown-ups</summary>
+      <div>
+        <h3>What this is</h3>
+        <p><strong>Heart words</strong> are high-frequency words that aren't fully decodable yet. Kids sound out the parts that follow the patterns they know and learn the irregular part “by heart.” In class, a heart goes over the tricky letters.</p>
+        <h3>The tricky parts in this set</h3>
+        <ul>
+          <li><em>is</em>, <em>his</em>: the <strong>s</strong> says /z/.</li>
+          <li><em>was</em>: the <strong>a</strong> says /ŭ/ and the <strong>s</strong> says /z/.</li>
+          <li><em>he</em>: the <strong>e</strong> says its name, /ē/.</li>
+          <li><em>for</em>: <strong>or</strong> says /or/.</li>
+          <li><em>that</em>: <strong>th</strong> is a digraph that hasn't been taught yet.</li>
+          <li><em>are</em>: the whole word is the heart part (<strong>a-r-e</strong> says /ar/).</li>
+          <li><em>in</em>, <em>it</em>, <em>on</em>: no heart part. These are fully decodable and just get practiced a lot.</li>
+        </ul>
+        <p>Some heart parts are only tricky <em>for now</em>. Once <em>th</em>, <em>or</em> and long vowels are taught, <em>that</em>, <em>for</em> and <em>he</em> become regular. The <em>a</em> in <em>was</em> stays tricky.</p>
+        <h3>How to help</h3>
+        <ul>
+          <li><strong>Say, tap, spell, write.</strong> Say the word, tap a finger for each sound, spell it out loud, then write it while saying the letter names.</li>
+          <li>Draw a little heart over the tricky part when your child writes the word.</li>
+          <li>A few minutes often beats one long session. Mix in words your child already knows so it feels like a win.</li>
+          <li>If your child guesses from the first letter (<em>his</em> for <em>he</em>), point to each letter and read it together slowly.</li>
+        </ul>
+      </div>
+    </details>
+  </main>
+
+  <footer>
+    <p>Nothing is saved. Refresh the page to start over.</p>
+  </footer>
+
+  <script src="../../shared/lesson.js"></script>
+  <script src="lesson.js"></script>
+</body>
+</html>
