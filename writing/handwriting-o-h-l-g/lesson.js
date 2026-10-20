@@ -5,14 +5,14 @@
 
   const letters = ['O', 'o', 'H', 'h', 'L', 'l', 'G', 'g'];
   const words = {
-    O: '🐙 Octopus · 🦉 Owl · 🍊 Orange',
-    o: '🐙 octopus · 🐶 dog · 🦊 fox',
-    H: '🏠 House · 🎩 Hat · 🐴 Horse',
-    h: '🎩 hat · 🏠 house · 🐟 fish',
-    L: '🦁 Lion · 🍋 Lemon · 🍃 Leaf',
-    l: '🦁 lion · 🍋 lemon · 🔔 bell',
-    G: '🐐 Goat · 🎁 Gift · 🍇 Grapes',
-    g: '🐐 goat · 🐷 pig · 🐸 frog',
+    O: 'Octopus · Owl · Orange',
+    o: 'octopus · dog · fox',
+    H: 'House · Hat · Horse',
+    h: 'hat · house · fish',
+    L: 'Lion · Lemon · Leaf',
+    l: 'lion · lemon · bell',
+    G: 'Goat · Gift · Grapes',
+    g: 'goat · pig · frog',
   };
 
   (globalThis.LESSONS = globalThis.LESSONS || {})['handwriting-o-h-l-g'] = { letters, words };

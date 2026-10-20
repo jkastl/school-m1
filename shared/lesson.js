@@ -99,15 +99,24 @@
     return n;
   };
 
+  // Interface icons are drawn, not emoji. Authored here, so innerHTML is safe.
+  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 9.2h3.8L12 5.3v13.4l-4.7-3.9H3.5z" fill="currentColor"/><path d="M15.2 9a4.2 4.2 0 0 1 0 6M17.8 6.4a8 8 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  L.speakerIcon = function () {
+    const s = L.el('span', { class: 'icon' });
+    s.innerHTML = SPEAKER;
+    return s;
+  };
+
   L.sayButton = function (text, label) {
     return L.el('button', {
       type: 'button', class: 'say', 'aria-label': label || 'Hear it', title: label || 'Hear it',
       onclick: () => L.speak(typeof text === 'function' ? text() : text),
-    }, '🔊');
+    }, L.speakerIcon());
   };
 
-  // Drawings for words with no clear emoji. Authored here, so innerHTML is safe.
+  // Drawings for quiz pictures that no emoji shows well.
   L.pictures = {
+    listen: SPEAKER.replace('viewBox="0 0 24 24"', 'viewBox="0 0 24 24" class="listen"'),
     cube: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 12 86 30 50 48 14 30Z" fill="#8fc1ff"/><path d="M14 30 50 48V90L14 72Z" fill="#3d7fe0"/><path d="M86 30 50 48V90L86 72Z" fill="#2459a8"/><path d="M50 12 86 30V72L50 90 14 72V30ZM14 30 50 48 86 30M50 48V90" fill="none" stroke="#173a70" stroke-width="3" stroke-linejoin="round"/></svg>',
     edge: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M10 40H90V50H10Z" fill="#c98a4b"/><path d="M18 50H26V88H18ZM74 50H82V88H74Z" fill="#a5672d"/><path d="M8 38H92" stroke="#e8432e" stroke-width="7" stroke-linecap="round"/><path d="M60 22 68 32" stroke="#e8432e" stroke-width="4" stroke-linecap="round"/><path d="M66 18 70 30" stroke="#e8432e" stroke-width="4" stroke-linecap="round"/></svg>',
   };
@@ -123,9 +132,8 @@
   L.burst = function () {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const b = L.el('div', { class: 'burst', 'aria-hidden': 'true' });
-    const bits = ['⭐', '🌟', '✨', '🎉'];
     for (let i = 0; i < 18; i++) {
-      const s = L.el('span', { text: bits[i % bits.length] });
+      const s = L.el('span', { class: `c${i % 3}`, text: '★' });
       s.style.left = `${Math.random() * 96}%`;
       s.style.animationDelay = `${Math.random() * 0.5}s`;
       b.append(s);
@@ -161,7 +169,7 @@
         L.el('button', {
           type: 'button', class: 'say wide',
           onclick: () => L.speak(sayText),
-        }, ['🔊', L.el('span', { text: it.hideWord ? 'Hear the word' : 'Hear it' })]),
+        }, [L.speakerIcon(), L.el('span', { text: it.hideWord ? 'Hear the word' : 'Hear it' })]),
       ]);
       // With no speech at all, a listening question needs a grown-up to read the word.
       if (it.hideWord && !L.canSpeak()) {
@@ -184,14 +192,14 @@
           if (tries === 1) stars++;
           const msg = it.yes || cheers[Math.floor(Math.random() * cheers.length)];
           fb.className = 'feedback good';
-          fb.textContent = '✔ ' + msg;
+          fb.textContent = msg;
           L.autoSpeak(msg);
           paintTop();
           const last = at === order.length - 1;
           const nb = L.el('button', {
             type: 'button', class: 'btn',
             onclick: () => { if (last) done(); else { at++; show(true); } },
-          }, last ? 'Finish ⭐' : 'Next →');
+          }, last ? 'Finish' : 'Next →');
           next.append(nb);
           nb.focus({ preventScroll: true });
         } else {
@@ -213,7 +221,7 @@
       ]);
       function paintTop() {
         top.firstChild.textContent = `${at + 1} of ${order.length}`;
-        top.lastChild.textContent = stars ? '⭐'.repeat(stars) : '';
+        top.lastChild.textContent = '★'.repeat(stars);
         top.lastChild.setAttribute('aria-label', `${stars} ${stars === 1 ? 'star' : 'stars'}`);
       }
       paintTop();
@@ -240,7 +248,7 @@
       const msg = all ? `You did it! ${stars} stars!` : `You did it! You got ${stars} ${stars === 1 ? 'star' : 'stars'}.`;
       const again = L.el('button', { type: 'button', class: 'btn', onclick: () => start(true) }, 'Play again ↻');
       root.append(L.el('div', { class: 'quiz-done' }, [
-        L.el('span', { class: 'big', 'aria-hidden': 'true', text: all ? '🏆' : '🎉' }),
+        L.el('span', { class: 'big', 'aria-hidden': 'true', text: '★' }),
         L.el('p', { text: msg }),
         L.el('p', { class: 'quiz-help', text: 'A star means you got it on the first try.' }),
         L.el('div', { class: 'row' }, again),
@@ -272,7 +280,7 @@
     document.querySelectorAll('button[data-say], .say-line > button.say').forEach((b) => {
       b.type = 'button';
       if (b.classList.contains('say')) {
-        if (!b.textContent.trim()) b.textContent = '🔊';
+        if (!b.textContent.trim()) b.append(L.speakerIcon());
         if (!b.hasAttribute('aria-label')) b.setAttribute('aria-label', 'Read this out loud');
         b.title = b.getAttribute('aria-label');
       }
@@ -294,7 +302,7 @@
       if (!synth) toggle.hidden = true;
       const paint = () => {
         toggle.setAttribute('aria-pressed', String(autoRead));
-        toggle.textContent = autoRead ? '🔊 Auto-read on' : '🔇 Auto-read off';
+        toggle.textContent = autoRead ? 'Auto-read: on' : 'Auto-read: off';
       };
       toggle.addEventListener('click', () => {
         autoRead = !autoRead;

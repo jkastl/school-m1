@@ -9,8 +9,13 @@ require(path.join(ROOT, 'shared', 'lesson.js'));
 require(path.join(ROOT, 'shared', 'letters.js'));
 const L = globalThis.Lesson;
 
-const slugs = fs.readdirSync(path.join(ROOT, 'lessons'));
-for (const slug of slugs) require(path.join(ROOT, 'lessons', slug, 'lesson.js'));
+// Lessons live in <subject>/<slug>/ and register under their slug.
+const dirs = fs.readdirSync(ROOT, { withFileTypes: true })
+  .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
+  .flatMap((e) => fs.readdirSync(path.join(ROOT, e.name)).map((slug) => path.join(ROOT, e.name, slug)))
+  .filter((d) => fs.existsSync(path.join(d, 'lesson.js')));
+const slugs = dirs.map((d) => path.basename(d));
+for (const d of dirs) require(path.join(d, 'lesson.js'));
 const LESSONS = globalThis.LESSONS;
 
 test('each lesson script registers under its folder name', () => {

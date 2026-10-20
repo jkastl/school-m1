@@ -39,7 +39,7 @@
         ['was', 'are', 'his', 'for'], ['for', 'on', 'are', 'that'], ['that', 'he', 'it', 'was'],
         ['are', 'was', 'for', 'on'],
       ].map(([answer, ...others]) => ({
-        pic: '👂', hideWord: true, say: answer, choices: [answer, ...others], answer, yes: `Yes! ${answer}.`,
+        pic: 'listen', hideWord: true, say: answer, choices: [answer, ...others], answer, yes: `Yes! ${answer}.`,
       })),
     },
     // Each sentence has one choice that fits; the others are heart words that don't.
@@ -98,7 +98,7 @@
     finder.textContent = '';
     const top = L.el('div', { class: 'quiz-top' }, [
       L.el('span', { text: `${at + 1} of ${order.length}` }),
-      L.el('span', { class: 'quiz-stars', text: '⭐'.repeat(stars), 'aria-label': `${stars} stars` }),
+      L.el('span', { class: 'quiz-stars', text: '★'.repeat(stars), 'aria-label': `${stars} stars` }),
     ]);
     const letters = [...w.word].map((ch, i) => L.el('button', {
       type: 'button', class: 'tile', 'aria-pressed': 'false', 'aria-label': `letter ${ch}`,
@@ -112,11 +112,11 @@
     const wordBox = L.el('div', { class: 'tiles finder-letters', role: 'group', 'aria-label': `Letters in ${w.word}` }, letters);
     const card = L.el('div', { class: 'quiz-card' }, [
       wordBox,
-      L.el('button', { type: 'button', class: 'say wide', onclick: () => L.speak(w.word) }, ['🔊', L.el('span', { text: 'Hear it' })]),
+      L.el('button', { type: 'button', class: 'say wide', onclick: () => L.speak(w.word) }, [L.speakerIcon(), L.el('span', { text: 'Hear it' })]),
     ]);
     const fb = L.el('p', { class: 'feedback', 'aria-live': 'polite' });
     const next = L.el('div', { class: 'quiz-next' });
-    const checkBtn = L.el('button', { type: 'button', class: 'btn', onclick: () => check(false) }, 'Check ✔');
+    const checkBtn = L.el('button', { type: 'button', class: 'btn', onclick: () => check(false) }, 'Check');
     const noneBtn = L.el('button', { type: 'button', class: 'btn ghost', onclick: () => check(true) }, 'No tricky part');
     const actions = L.el('div', { class: 'row finder-actions' }, [checkBtn, noneBtn]);
 
@@ -138,15 +138,15 @@
         const msg = w.why
           ? `${right ? 'Yes! ' : 'Here it is. '}${w.why}`
           : (right ? 'Yes! No tricky part. You can sound it out.' : 'This one has no tricky part. You can sound it out!');
-        fb.textContent = (right ? '✔ ' : '') + msg;
+        fb.textContent = msg;
         L.autoSpeak(right ? (w.why ? `Yes! ${w.say}` : msg) : (w.say || msg));
-        top.lastChild.textContent = '⭐'.repeat(stars);
+        top.lastChild.textContent = '★'.repeat(stars);
         top.lastChild.setAttribute('aria-label', `${stars} stars`);
         const last = at === order.length - 1;
         const nb = L.el('button', {
           type: 'button', class: 'btn',
           onclick: () => { if (last) finderDone(); else { at++; finderShow(true); } },
-        }, last ? 'Finish ⭐' : 'Next →');
+        }, last ? 'Finish' : 'Next →');
         next.append(nb);
         nb.focus({ preventScroll: true });
       } else {
@@ -171,7 +171,7 @@
     const msg = `You did it! You got ${stars} ${stars === 1 ? 'star' : 'stars'}.`;
     const again = L.el('button', { type: 'button', class: 'btn', onclick: finderStart }, 'Play again ↻');
     finder.append(L.el('div', { class: 'quiz-done' }, [
-      L.el('span', { class: 'big', 'aria-hidden': 'true', text: stars === order.length ? '🏆' : '🎉' }),
+      L.el('span', { class: 'big', 'aria-hidden': 'true', text: '★' }),
       L.el('p', { text: msg }),
       L.el('p', { class: 'quiz-help', text: 'A star means you got it on the first try.' }),
       L.el('div', { class: 'row' }, again),
@@ -198,7 +198,7 @@
         L.el('button', {
           type: 'button', class: 'btn ghost',
           onclick: () => { L.speak(w.word); heard.textContent = `It says “${w.word}”. Did you get it?`; },
-        }, '🔊 Check'),
+        }, [L.speakerIcon(), 'Check']),
         L.el('button', {
           type: 'button', class: 'btn',
           onclick: () => {
@@ -206,14 +206,14 @@
             flash.textContent = '';
             const again = L.el('button', { type: 'button', class: 'btn', onclick: flashStart }, 'Shuffle and go again ↻');
             flash.append(L.el('div', { class: 'quiz-done' }, [
-              L.el('span', { class: 'big', 'aria-hidden': 'true', text: '📚' }),
+              L.el('span', { class: 'big', 'aria-hidden': 'true', text: '★' }),
               L.el('p', { text: `You read all ${deck.length} words!` }),
               L.el('div', { class: 'row' }, again),
             ]));
             L.autoSpeak(`You read all ${deck.length} words!`);
             L.burst();
           },
-        }, last ? 'Done ⭐' : 'Next word →'),
+        }, last ? 'Done' : 'Next word →'),
       ]),
       heard,
     );
