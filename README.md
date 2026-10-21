@@ -35,9 +35,15 @@ This repo is public, and git history keeps everything, so these rules beat every
   your own words and drawings. `.gitignore` blocks image and document files, and a test fails if
   one sneaks in. Draw pictures as inline SVG (`Lesson.pictures`) or use emoji.
 - Example sentences use generic people ("the man", "he"), never names.
-- No tracking and no third-party requests: no analytics, fonts, CDNs or embeds. The font (Andika)
-  is self-hosted. Every page carries a `noindex` robots tag, `no-referrer`, and a Content Security
-  Policy that blocks every other origin. Read-aloud prefers voices that run on the device.
+- One outside service only: the site's anonymous visit counter ([GoatCounter](https://www.goatcounter.com/),
+  no cookies, no personal data), loaded by `shared/stats.js` on every page. It's a copy of the main
+  site's file and does nothing off `github.io`, so local testing never counts. Nothing else comes
+  from another site: no other analytics, fonts, CDNs or embeds. The font (Andika) is self-hosted.
+- Every page carries `no-referrer` and a Content Security Policy that allows only this site and
+  the counter (`gc.zgo.at` for its script, `jkastl.goatcounter.com` for the count). Read-aloud
+  prefers voices that run on the device.
+- Pages are open to search engines, so anything on them can turn up in search results. That's one
+  more reason to keep every page free of anything personal.
 - Nothing is saved: no cookies, `localStorage`, `sessionStorage`, IndexedDB, or state in the URL.
 
 ### 2. Check what's already here
@@ -94,8 +100,9 @@ The page has four parts, in this order, with these ids:
 3. `#world`: In the real world.
 4. `#grownups`: a closed `<details class="grownups">`.
 
-Copy the `<head>` from an existing lesson (robots, referrer, CSP, viewport, title, description,
-icon) and keep the top bar: the breadcrumb (All lessons / *Subject*) and the Auto-read toggle.
+Copy the `<head>` from an existing lesson (viewport, referrer, CSP, title, description, the
+canonical link and sharing tags with this page's own address, the counter script, icon) and keep
+the top bar: the breadcrumb (All lessons / *Subject*) and the Auto-read toggle.
 Give the `<body>` a theme class (`theme-heart`, `theme-write`, `theme-sh`, `theme-vowel`, or add
 one in `shared/site.css`).
 
@@ -167,13 +174,18 @@ Add one line to [`lessons.js`](lessons.js), at the top (newest first):
 - `keywords` are extra search words that aren't in the title: the words or letters taught, and
   other names for the skill.
 
-That's all it takes: the index and the subject's page both read the list. The index is a compact
+Then add the lesson's address to [`sitemap.xml`](sitemap.xml), one `<url>` line, after the index
+and in A to Z order. Search engines find it there: the main site's `robots.txt` points at this
+sitemap, since crawlers only read `robots.txt` at the domain root.
+
+The index and the subject's page both read the list, so nothing else needs touching. The index is a compact
 table (lesson, subject, date added) with search, a filter per subject, and columns you can sort.
 It opens newest first. Search matches every word typed, across the title, subject and keywords.
 
 **A new subject** gets a folder with an `index.html` that lists just that subject: copy
-`reading/index.html` and change the subject in its `<title>`, `<h1>`, description and
-`data-subject`. The tests check that every subject has one and that every lesson is listed once.
+`reading/index.html` and change the subject in its `<title>`, `<h1>`, description, canonical
+link, sharing tags and `data-subject`, and add its address to `sitemap.xml`. The tests check
+that every subject has one and that every lesson is listed once, in both lists.
 
 ### 7. Accessibility
 
@@ -191,7 +203,8 @@ node --test 'test/*.test.js'
 ```
 
 The tests (Node 20 or later, no dependencies) check the privacy rules (no photos, no outside
-requests, no storage, robots and CSP on every page), that links resolve, that the lesson list
+requests but the counter, no storage, the CSP on every page), each page's canonical address,
+sharing tags and counter, the sitemap, that links resolve, that the lesson list
 matches the folders, the subject pages, emoji only as pictures, every quiz's answers, the
 heart-word parts, the letter shapes, the tracing scores, and search and sort. GitHub Actions runs
 them on every push. Before calling a lesson done, also open it at phone width and play every
@@ -212,9 +225,10 @@ GitHub Pages publishes `main` as-is (`.nojekyll` turns off Jekyll), usually with
 ```
 index.html          the lesson index (search, subject filters, sorting)
 lessons.js          the list of every lesson
+sitemap.xml         every page's address, for search engines
 <subject>/          one folder per subject (reading/, writing/), with a page listing it
 <subject>/<slug>/   one folder per lesson: index.html and lesson.js
-shared/             styles, scripts and the font every page uses
+shared/             styles, scripts and the font every page uses (stats.js is the counter)
 test/               node:test suite
 CLAUDE.md           points Claude at these instructions
 ```
