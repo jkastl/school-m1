@@ -1,4 +1,4 @@
-// Structure, privacy and lesson-list checks over the whole site. Plain file reads, no browser.
+// Structure, privacy, search and lesson-list checks over the whole site. Plain file reads, no browser.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -32,34 +32,77 @@ test('no photos, scans or documents are committed (worksheets stay private)', ()
   assert.deepEqual(banned, [], 'draw pictures as inline SVG or use emoji instead');
 });
 
-test('every page is private, safe and self-contained', () => {
+const SITE = 'https://jkastl.github.io/school-m1/';
+// The only other sites a page may talk to: the anonymous visit counter (shared/stats.js).
+const COUNTER = ['https://gc.zgo.at', 'https://jkastl.goatcounter.com'];
+const CSP = "default-src 'self'; script-src 'self' https://gc.zgo.at; img-src 'self' data: https://jkastl.goatcounter.com; connect-src https://jkastl.goatcounter.com; object-src 'none'; base-uri 'none'; form-action 'none'";
+
+test('every page can be found and shared, and is locked to this site and the counter', () => {
   for (const f of pages) {
     const html = read(f);
+    const url = SITE + f.replace(/index\.html$/, '');
+    const up = '../'.repeat(f.split('/').length - 1);
+    const title = html.match(/<title>([^<]+)<\/title>/);
+    const desc = html.match(/<meta name="description" content="([^"]+)">/);
     assert.match(html, /<html lang="en">/, `${f}: lang`);
     assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/, `${f}: viewport`);
-    assert.match(html, /<meta name="robots" content="noindex, nofollow">/, `${f}: noindex`);
+    assert.doesNotMatch(html, /name="robots"/, `${f}: search engines may index it`);
     assert.match(html, /<meta name="referrer" content="no-referrer">/, `${f}: referrer`);
-    assert.match(html, /<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*connect-src 'none'/, `${f}: CSP`);
-    assert.match(html, /<title>[^<]+<\/title>/, `${f}: title`);
+    assert.ok(html.includes(`<meta http-equiv="Content-Security-Policy" content="${CSP}">`), `${f}: CSP`);
+    assert.ok(title && desc, `${f}: title and description`);
+    assert.ok(html.includes(`<link rel="canonical" href="${url}">`), `${f}: canonical ${url}`);
+    assert.ok(html.includes(`<meta property="og:url" content="${url}">`), `${f}: og:url`);
+    assert.ok(html.includes(`<meta property="og:title" content="${title[1].split(' · ')[0]}">`), `${f}: og:title`);
+    assert.ok(html.includes(`<meta property="og:description" content="${desc[1]}">`), `${f}: og:description`);
+    assert.ok(html.includes(`<script src="${up}shared/stats.js" defer></script>`), `${f}: visit counter`);
     assert.doesNotMatch(html, /<script>|<script [^>]*>[^<]+<\/script>|<style>|\sstyle="|\son[a-z]+="/, `${f}: inline script or style (the CSP blocks them)`);
   }
 });
 
-test('nothing loads from other sites, and nothing is stored', () => {
+test('nothing else loads from other sites, and nothing is stored', () => {
   for (const f of files.filter((x) => /\.(html|css|js)$/.test(x) && !x.startsWith('test/'))) {
     const src = read(f);
-    assert.doesNotMatch(src, /(src|href)="(https?:)?\/\//i, `${f}: external src/href`);
+    for (const [u] of src.matchAll(/https?:\/\/[^\s"'`)<>]+/g)) {
+      const own = u.startsWith(SITE) && f.endsWith('.html');
+      const svg = u.startsWith('http://www.w3.org/');
+      const counter = COUNTER.some((c) => u.startsWith(c)) && (f === 'shared/stats.js' || f.endsWith('.html'));
+      assert.ok(own || svg || counter, `${f}: ${u}`);
+    }
+    if (f.endsWith('.html')) {
+      // In a page, the counter's hosts appear only in the CSP, and this site's address only in
+      // the canonical link and og:url.
+      const rest = src.replace(/<meta http-equiv="Content-Security-Policy" content="[^"]*">/, '');
+      assert.ok(!COUNTER.some((c) => rest.includes(c)), `${f}: counter outside the CSP`);
+      assert.doesNotMatch(src, /\ssrc="(https?:)?\/\//i, `${f}: external src`);
+      for (const [tag] of src.matchAll(/<[^>]*"https?:\/\/[^>]*>/g)) {
+        assert.match(tag, /^<(link rel="canonical"|meta property="og:url")/, `${f}: ${tag}`);
+      }
+    }
     assert.doesNotMatch(src, /url\(\s*['"]?(https?:)?\/\//i, `${f}: external url()`);
     assert.doesNotMatch(src, /@import|fetch\(|XMLHttpRequest|WebSocket|sendBeacon/, `${f}: network call`);
     assert.doesNotMatch(src, /localStorage|sessionStorage|indexedDB|document\.cookie/, `${f}: storage (refresh should start clean)`);
   }
 });
 
+test('the counter only counts on the real site', () => {
+  const stats = read('shared/stats.js');
+  assert.match(stats, /if \(!code \|\| !\/\\\.github\\\.io\$\/\.test\(location\.hostname\)\) return;/);
+  assert.match(stats, /s\.integrity = "sha384-[A-Za-z0-9+/=]+";/, 'the counter script is pinned');
+});
+
+test('the sitemap lists the index, every subject page and every lesson', () => {
+  const locs = [...read('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const want = [SITE, ...subjectDirs.map((d) => `${SITE}${d}/`), ...lessonDirs.map((d) => SITE + d)];
+  assert.deepEqual(locs.slice().sort(), want.sort(), 'one line per page');
+  assert.equal(locs[0], SITE, 'the index comes first');
+  assert.deepEqual(locs.slice(1), locs.slice(1).sort(), 'then A to Z');
+});
+
 test('local links and scripts point at files that exist, relative to the page', () => {
   for (const f of pages) {
     const html = read(f);
     for (const [, attr, url] of html.matchAll(/\s(src|href)="([^"]+)"/g)) {
-      if (url.startsWith('#') || url.startsWith('data:')) continue;
+      if (url.startsWith('#') || url.startsWith('data:') || url.startsWith(SITE)) continue;
       assert.ok(!url.startsWith('/'), `${f}: ${url} must be relative (the site lives under /school-m1/)`);
       let target = path.posix.join(path.posix.dirname(f), url.split('#')[0]);
       if (url.endsWith('/') || url === '') target = path.posix.join(target, 'index.html');
